@@ -1,0 +1,31 @@
+security:
+    # Use the new Security component - experimental in 5.1
+    enable_authenticator_manager: true
+
+    encoders:
+        Symfony\Component\Security\Core\User\User: 'plaintext'
+
+    providers:
+        in_memory:
+            memory:
+                users:
+                    user: { password: 'user', roles: ['ROLE_USER'] }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        # Having another authenticator will trigger the issue
+        # Pattern won't match, it shouldn't be called
+        another_auth:
+            pattern: ^/foo
+            custom_authenticators:
+                - App\Security\DummyAuthenticator
+        main:
+            # Uncomment line below to fix the issue
+            #entry_point: security.authenticator.http_basic.main
+            http_basic: ~
+            stateless: true
+
+    access_control:
+        - { path: ^/, roles: ROLE_USER }
+
